@@ -17,6 +17,35 @@ public struct Point3D
     
     public override string ToString() => $"({X:F1}, {Y:F1}, {Z:F1})";
 }
+public static Point3D operator -(Point3D p1, Point3D p2)
+{
+    return new Point3D(p1.X - p2.X, p1.Y - p2.Y, p1.Z - p2.Z);
+}
+
+public static double DotProduct(Point3D p1, Point3D p2)
+{
+    return p1.X * p2.X + p1.Y * p2.Y + p1.Z * p2.Z;
+}
+
+public static Point3D CrossProduct(Point3D p1, Point3D p2)
+{
+    return new Point3D(
+        p1.Y * p2.Z - p1.Z * p2.Y,
+        p1.Z * p2.X - p1.X * p2.Z,
+        p1.X * p2.Y - p1.Y * p2.X
+    );
+}
+public double CalculateVolume()
+{
+    var ab = B - A;
+    var ac = C - A;
+    var ad = D - A;
+
+    var crossProduct = Point3D.CrossProduct(ac, ad);
+    double mixedProduct = Point3D.DotProduct(ab, crossProduct);
+
+    return Math.Abs(mixedProduct) / 6.0;
+}
 
 
 public class Tetrahedron
@@ -60,6 +89,27 @@ public class Tetrahedron
         
         return Math.Abs(mixedProduct) / 6.0;
     }
+Point3D ReadPoint(string pointName)
+{
+    double x, y, z;
+    while (true)
+    {
+        Console.WriteLine($"Введіть координати {pointName} (формат: X Y Z): ");
+        var input = Console.ReadLine().Split(' ');
+
+        if (input.Length == 3 &&
+            double.TryParse(input[0], NumberStyles.Any, CultureInfo.InvariantCulture, out x) &&
+            double.TryParse(input[1], NumberStyles.Any, CultureInfo.InvariantCulture, out y) &&
+            double.TryParse(input[2], NumberStyles.Any, CultureInfo.InvariantCulture, out z))
+        {
+            return new Point3D(x, y, z);
+        }
+        else
+        {
+            Console.WriteLine("Некоректний ввід! Спробуйте ще раз.");
+        }
+    }
+}
 
     
     public override string ToString()
